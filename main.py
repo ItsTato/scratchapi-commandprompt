@@ -32,6 +32,7 @@ except ImportError as e:
     sys.exit(1)
 
 try:
+    import scratchclient
     from scratchclient import *
     print(f"{Back.LIGHTGREEN_EX}{Fore.BLACK} GOOD {Fore.RESET}{Back.RESET} Imported {Fore.LIGHTYELLOW_EX}scratchclient{Fore.RESET}")
 except ImportError as e:
@@ -39,6 +40,24 @@ except ImportError as e:
     sys.exit(1)
 
 os.system("cls")
+
+def getChangeVarValue(command):
+    try:
+        int(command[2]); return 2
+    except:
+        try:
+            int(command[3]); return 3
+        except:
+            try:
+                int(command[4]); return 4
+            except:
+                try:
+                    int(command[5]); return 5
+                except:
+                    try:
+                        int(command[6]); return 6
+                    except Exception as e:
+                        print(f"{Back.LIGHTRED_EX}{Fore.BLACK} ERROR {Fore.RESET}{Back.RESET} Something critical broke! Error: {Back.LIGHTWHITE_EX}{e}{Back.RESET}"); return 7
 
 while True:
     maincommand = input(f"{Fore.LIGHTYELLOW_EX}ScratchAPI{Fore.RESET}{Fore.GREEN}${Fore.RESET} ")
@@ -56,32 +75,36 @@ while True:
         mainnotquit = True
         
         while mainnotquit == True:
-            option = input(f"{Fore.LIGHTYELLOW_EX}{username}{Fore.RESET}{Fore.GREEN}@{Fore.RESET}{Fore.LIGHTYELLOW_EX}ScratchSite{Fore.RESET}{Fore.GREEN}#{Fore.RESET} ")
-            if option == "cloudconnect":
-                print("Please enter a Project ID.")
-                projectid = input("Project ID: ")
+            option = input(f"{Fore.LIGHTYELLOW_EX}{username}{Fore.RESET}{Fore.GREEN}@{Fore.RESET}{Fore.LIGHTYELLOW_EX}ScratchSite{Fore.RESET}{Fore.GREEN}#{Fore.RESET} ").split(" ")
+            if(option[0] == "cloudconnect"):
+                projectid = option[1]
                 connection = session.create_cloud_connection(projectid)
                 notquit = True
                 while notquit == True:
-                    command = input(f"{Fore.LIGHTYELLOW_EX}{username}{Fore.RESET}{Fore.GREEN}@{Fore.RESET}{Fore.LIGHTYELLOW_EX}{session.get_project(projectid).title}{Fore.RESET}{Fore.GREEN}#{Fore.RESET} ")
-                    if command == "changevar":
-                        vartochange = input("Cloud variable to change: ")
-                        vartochange1 = vartochange
-                        newvarval = input("New value for the variable: ")
-                        newvarval1 = newvarval
-                        connection.set_cloud_variable(vartochange1, newvarval1)
-                        print("Changed variable value.")
-                    if command == "getlatestcomment":
+                    command = input(f"{Fore.LIGHTYELLOW_EX}{username}{Fore.RESET}{Fore.GREEN}@{Fore.RESET}{Fore.LIGHTYELLOW_EX}{session.get_project(projectid).title}{Fore.RESET}{Fore.GREEN}#{Fore.RESET} ").split(" ")
+                    if(command[0] == "changevar"):
+                        if(getChangeVarValue(command=command)==2):
+                            connection.set_cloud_variable(command[1],command[getChangeVarValue(command=command)])
+                        elif(getChangeVarValue(command=command)==3):
+                            connection.set_cloud_variable(f"{command[1]} {command[2]}",command[getChangeVarValue(command=command)])
+                        elif(getChangeVarValue(command=command)==4):
+                            connection.set_cloud_variable(f"{command[1]} {command[2]} {command[3]}",command[getChangeVarValue(command=command)])
+                        elif(getChangeVarValue(command=command)==5):
+                            connection.set_cloud_variable(f"{command[1]} {command[2]} {command[3]} {command[4]}",command[getChangeVarValue(command=command)])
+                        elif(getChangeVarValue(command=command)==6):
+                            connection.set_cloud_variable(f"{command[1]} {command[2]} {command[3]} {command[4]} {command[5]}",command[getChangeVarValue(command=command)])
+                        print(f"{Back.LIGHTGREEN_EX}{Fore.BLACK} GOOD {Fore.RESET}{Back.RESET} Changed variable value.")
+                    if(command[0] == "getlatestcomment"):
                         print(f"Latest comment for {session.get_project(projectid).title}")
                         print(session.get_project(projectid).get_comments()[0].content)
-                    if command == "exit":
+                    if(command[0] == "exit"):
                         notquit = False
                         os.system("cls")
-            if option == "postcomment":
+            if(option[0] == "postcomment"):
                 usertopostcomment = input("Username of the user to post the comment at: ")
                 comment = input("Comment to post (500 characters max): ")
                 session.get_user(f"{usertopostcomment}").post_comment(f"{comment}")
-            if option == "logout":
+            if(option[0] == "logout"):
                 mainnotquit = False
                 os.system("cls")
     if maincommand == "help":
